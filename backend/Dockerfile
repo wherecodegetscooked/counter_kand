@@ -5,6 +5,7 @@ FROM node:19.1.0-alpine3.16
 ############################################
 WORKDIR /srv/app
 EXPOSE 8080
+ENV npm_config_cache ./.npm-cache
 ENTRYPOINT [ "entrypoints/production.sh" ]
 CMD [ "npm", "start" ]
 
