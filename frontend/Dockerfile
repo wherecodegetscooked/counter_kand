@@ -1,36 +1,23 @@
-FROM node:19.0.1-alpine
+FROM node:19-alpine
 
-############################################
-# General Docker image configuration
-############################################
+ENV npm_config_cache ./.npm-cache
+RUN apk add --no-cache dos2unix envsubst
+
 WORKDIR /srv/app
-EXPOSE 3000
-CMD ["npm", "run", "start"]
-ENTRYPOINT [ "./entrypoint.sh" ]
 
-############################################
-# System Dependencies
-############################################
-RUN apk update && apk add --no-cache gettext dos2unix
+COPY package.json package-lock.json ./
+RUN npm ci
 
-############################################
-# None root user
-############################################
-RUN chown -R node:node /srv/app
-USER node
-COPY --chown=node:node [ "package.json", "package-lock.json",  "./"]
-COPY --chown=node:node [ "./entrypoint.sh", "./entrypoint.sh"]
-COPY --chown=node:node [ "public", "public"]
-COPY --chown=node:node [ "src", "src"]
-
-############################################
-# Building Application
-############################################
-RUN npm install
-RUN npm run build
-RUN dos2unix entrypoint.sh
-
-USER root
-RUN chgrp -R 0 /srv/app && \
+COPY . .
+RUN dos2unix entrypoint.sh && \
+    npm run build && \
+    chown node: build/index.html && \
+    chgrp -R 0 /srv/app && \
     chmod -R g=u /srv/app
+
 USER node
+
+EXPOSE 3000
+
+ENTRYPOINT [ "./entrypoint.sh" ]
+CMD ["npm", "run", "start"]
