@@ -10,12 +10,12 @@
 	- DB_USER aus dem counter-database secret
 	- DB_NAME aus dem counter-database secret
 	- DB_PASSWORD aus dem counter-database secret
-	- DB_USER aus dem counter-config configMap
+	- DB_HOST aus dem counter-config configMap
 	- PASSPHRASE aus dem counter-secret secret
 1. Service für das Backend mit dem Namen «counter-backend» erstellen und auf den Port 8080 mappen
 1. Route für das Backend erstellen
 
 1. Deployment für das Frontend mit dem Namen «counter-frontend» und dem vorher erstellten image erstellen und folgende envs einrichten:
-	- DB_HOST aus dem counter-config configMap
+	- BACKEND_URL aus dem counter-config configMap
 1. Service für das Frontend mit dem Namen «counter-frontend» erstellen und auf den Port 3000 mappen
 1. Route für das Frontend erstellen
