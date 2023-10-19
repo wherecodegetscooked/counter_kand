@@ -4,7 +4,7 @@ services:
   frontend:
     build:
       context: frontend
-    image: counter_frontend
+    image: ghcr.io/modul-i-ch-109/counter_kand/counter_frontend:latest
     ports:
       - 3100:3100
       - 3000:3000
@@ -14,6 +14,7 @@ services:
   backend:
     build:
       context: backend
+    image: ghcr.io/modul-i-ch-109/counter_kand/counter_backend:latest
     ports:
       - 8080:8080
     environment:

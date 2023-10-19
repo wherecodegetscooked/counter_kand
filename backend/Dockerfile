@@ -1,36 +1,18 @@
 FROM node:19.1.0-alpine3.16
 
-############################################
-# General Docker image configuration
-############################################
-WORKDIR /srv/app
-EXPOSE 8080
 ENV npm_config_cache ./.npm-cache
-ENTRYPOINT [ "entrypoints/production.sh" ]
-CMD [ "npm", "start" ]
+RUN apk add --no-cache dos2unix 
 
-############################################
-# System Dependencies
-############################################
-RUN apk update && apk add --no-cache dos2unix
+WORKDIR /srv/app
 
-############################################
-# None root user
-############################################
-COPY [ "package.json", "package-lock.json",  "./"]
-COPY [ "config", "config"]
-COPY [ "src", "src"]
-COPY [ "entrypoints", "entrypoints"]
-RUN chown -R node:node /srv/app
-USER node
+COPY package.json package-lock.json ./
+RUN npm ci
 
-############################################
-# Building Application
-############################################
-RUN npm install
+COPY . .
 RUN dos2unix entrypoints/*
 
-USER root
-RUN chgrp -R 0 /srv/app && \
-    chmod -R g=u /srv/app
 USER node
+
+EXPOSE 8080
+ENTRYPOINT [ "entrypoints/production.sh" ]
+CMD [ "npm", "start" ]
