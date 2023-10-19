@@ -1,4 +1,4 @@
-FROM node:19-alpine
+FROM node:19.1.0-alpine3.16
 
 ENV npm_config_cache ./.npm-cache
 RUN apk add --no-cache dos2unix 
