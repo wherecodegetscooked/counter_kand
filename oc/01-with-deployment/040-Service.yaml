@@ -1,0 +1,72 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: counter-database
+  labels:
+    app: counter-database
+    app.kubernetes.io/part-of: lbb
+spec:
+  ports:
+    - name: counter-database
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: counter-database
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: counter-backend
+  labels:
+    app: counter-backend
+    app.kubernetes.io/part-of: lbb
+spec:
+  ports:
+    - name: counter-backend
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: counter-backend
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: counter-frontend
+  labels:
+    app: counter-frontend
+    app.kubernetes.io/part-of: lbb
+spec:
+  ports:
+    - name: counter-frontend
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: counter-frontend
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: counter-postgresadmin
+  labels:
+    app: counter-postgresadmin
+    app.kubernetes.io/part-of: lbb
+spec:
+  ports:
+    - name: counter-postgresadmin
+      protocol: TCP
+      port: 5050
+      targetPort: 5050
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: counter-postgresadmin

@@ -1,0 +1,31 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: counter-database-data
+  labels:
+    app: counter-database-data
+    app.kubernetes.io/part-of: lbb  
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: rbd-storagepool-cluster
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: counter-postgresadmin-data
+  labels:
+    app: counter-postgresadmin-data
+    app.kubernetes.io/part-of: lbb  
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: rbd-storagepool-cluster
+  volumeMode: Filesystem

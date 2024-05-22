@@ -1,0 +1,167 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-database
+  labels:
+    app: counter-database
+    app.kubernetes.io/part-of: lbb
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter-database
+  template:
+    metadata:
+      labels:
+        app: counter-database
+    spec:
+      volumes:
+        - name: counter-database-data
+          persistentVolumeClaim:
+            claimName: counter-database-data
+      containers:
+        - name: counter-database
+          image: quay.io/centos7/postgresql-10-centos7:20221109
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: counter-database
+                  key: database-user
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: counter-database
+                  key: database-password
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: counter-database
+                  key: database-name
+          volumeMounts:
+            - name: counter-database-data
+              mountPath: /var/lib/pgsql/data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-backend
+  labels:
+    app: counter-backend
+    app.kubernetes.io/part-of: lbb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter-backend
+  template:
+    metadata:
+      labels:
+        app: counter-backend
+    spec:
+      containers:
+        - name: counter-backend
+          image: ghcr.io/benschwarz1982/counter-backend:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: npm_config_cache
+              value: ./.npm-cache
+            - name: NODE_ENV
+              value: production
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: counter-database
+                  key: database-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: counter-database
+                  key: database-password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: counter-database
+                  key: database-name
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: counter-config
+                  key: database-host
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-frontend
+  labels:
+    app: counter-frontend
+    app.kubernetes.io/part-of: lbb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter-frontend
+  template:
+    metadata:
+      labels:
+        app: counter-frontend
+    spec:
+      containers:
+        - name: counter-frontend
+          image: ghcr.io/benschwarz1982/counter-frontend:v2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: npm_config_cache
+              value: ./.npm-cache
+            - name: NODE_ENV
+              value: production
+            - name: BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: counter-config
+                  key: backend-url
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-postgresadmin
+  labels:
+    app: counter-postgresadmin
+    app.kubernetes.io/part-of: lbb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter-postgresadmin
+  template:
+    metadata:
+      labels:
+        app: counter-postgresadmin
+    spec:
+      volumes:
+        - name: counter-postgresadmin-data
+          persistentVolumeClaim:
+            claimName: counter-postgresadmin-data
+      containers:
+        - name: counter-postgresadmin
+          image: ghcr.io/benschwarz1982/pgadmin4:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5050
+              protocol: TCP
+          volumeMounts:
+            - name: counter-postgresadmin-data
+              mountPath: /pgadmin/
