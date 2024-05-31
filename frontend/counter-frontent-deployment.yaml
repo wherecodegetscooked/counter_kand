@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-frontend
+  labels:
+    app: counter-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter-frontend
+  template:
+    metadata:
+      labels:
+        app: counter-frontend
+    spec:
+      containers:
+        - name: counter-frontend
+          image: ghcr.io/wherecodegetscooked/counter-frontend:v1
+          ports:
+            - containerPort: 3100
+          env:
+            - name: BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: counter-frontend
+                  key: BACKEND_URL
+            - name: npm_config_cache
+              value: ./.npm-cache
