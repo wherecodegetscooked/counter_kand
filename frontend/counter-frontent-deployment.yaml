@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: counter-frontend
-          image: ghcr.io/wherecodegetscooked/counter-frontend:v1
+          image: ghcr.io/thedefendhand/counter-frontend:v1
           ports:
             - containerPort: 3100
           env:

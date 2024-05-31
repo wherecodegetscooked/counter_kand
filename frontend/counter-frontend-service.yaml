@@ -3,8 +3,9 @@ kind: Service
 metadata:
   name: counter-frontend
 spec:
-  ports:
-    - port: 80
-      targetPort: 80
   selector:
     app: counter-frontend
+  ports:
+    - protocol: TCP
+      port: 3100
+      targetPort: 3100
