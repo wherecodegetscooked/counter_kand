@@ -7,6 +7,6 @@ spec:
     kind: Service
     name: counter-frontend
   port:
-    targetPort: 3100
+    targetPort: 3000
   tls:
     termination: edge

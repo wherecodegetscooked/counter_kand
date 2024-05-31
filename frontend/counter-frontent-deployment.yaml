@@ -18,7 +18,7 @@ spec:
         - name: counter-frontend
           image: ghcr.io/thedefendhand/counter-frontend:v1
           ports:
-            - containerPort: 3100
+            - containerPort: 3000
           env:
             - name: BACKEND_URL
               valueFrom:
